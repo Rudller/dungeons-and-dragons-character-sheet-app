@@ -1,13 +1,21 @@
-import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route
+} from 'react-router-dom';
 
-import LoginPage from "./components/LoginPage";
-
+import Home from './components/Home';
+import SignUp from './components/SignUp';
+import SignIn from './components/SignIn';
 
 export default function App() {
-
   return (
-    <>
-    <LoginPage />
-    </>
+    <Router>
+      <Routes>
+        <Route path='/' element={<Home />}/>
+        <Route path='/signin' element={<SignIn />} />
+        <Route path='/signup' element={<SignUp />} />
+      </Routes>
+    </Router>
   )
 }
