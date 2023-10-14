@@ -27,6 +27,7 @@ export default function Home() {
     return (
         <>
         <h1>Witoj poszukiwaczu przygód</h1>
+        <button onClick={() => navigation('/character-sheet-creator')}>Przejdź do tworzenia postaci</button>
         <button 
             className="bg-orange-500 rounded-md"
             onClick={onLogout}

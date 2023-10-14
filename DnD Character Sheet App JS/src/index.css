@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    h1 {
+        @apply text-3xl text-slate-700;
+    }
+    h2 {
+        @apply text-2xl text-slate-700;
+    }
+    button {
+        @apply bg-orange-500 rounded-md p-2;
+    }
+    input {
+        @apply border-solid border-2 rounded-md p-1;
+    }
+}
