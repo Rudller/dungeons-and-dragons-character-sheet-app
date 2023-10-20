@@ -29,11 +29,12 @@ export default function SignUp() {
 
 
     return (
-        <div>
-            <h1>Register new user!</h1>
+        <div className="flex flex-col items-center justify-center h-screen w-screen">
+            <div className="flex flex-col items-center border-2 border-slate-700 rounded-xl w-3/4 md:w-1/2 lg:w-1/3 m-auto shadow-2xl">
+            <h1 className="font-bold text-4xl my-5">Register new user!</h1>
             <form onSubmit={handleSingUp} className="flex flex-col gap-3">
 
-            <label>
+            <label className="self-end">
                 E-mail:
                 <input 
                 type="text" 
@@ -42,7 +43,7 @@ export default function SignUp() {
                 value={singUpLogin} onChange={(e) => setSingUpLogin(e.target.value)} />
             </label>
 
-            <label>
+            <label className="self-end">
                 Password:
                 <input 
                 type="password" 
@@ -51,11 +52,12 @@ export default function SignUp() {
                 value={singUpPass} onChange={(e) => setSingUpPass(e.target.value)}/>
             </label>
 
-            <button type="submit" className="bg-orange-500 rounded-md">Sing Up!</button>
+            <button type="submit" className="bg-orange-500 border-2 border-slate-700 font-bold shadow-xl">Sing Up!</button>
 
             </form>
 
-            <a onClick={() => navigation('/signin')}>Already a user? Click HERE to log in</a>
+            <a className="font-extralight cursor-pointer my-5 animate-pulse" onClick={() => navigation('/signin')}>Already a user? Click <u>HERE</u> to log in</a>
+        </div>
         </div>
     )
 }

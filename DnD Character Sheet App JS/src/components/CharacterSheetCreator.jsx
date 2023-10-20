@@ -44,7 +44,7 @@ export default function CharacterSheetCreator() {
             <div className="flex flex-col justify-center items-center">
                 <h2 className="text-center text-slate-700 text-4xl font-bold mb-5">Main info</h2>
                     <form onSubmit={handlerSubmit} className="flex flex-col items-center border-2 border-slate-700 rounded-2xl shadow-lg shadow-slate-700 mb-10 p-1">
-                        <label className="text-xl m-5 flex flex-col items-center">
+                        <label className=" text-xl m-5 flex flex-col items-center">
                             Whats your character name?
                             <input name="charName"/>
                         </label>
