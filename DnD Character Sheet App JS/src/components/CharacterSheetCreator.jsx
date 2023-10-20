@@ -10,8 +10,6 @@ export default function CharacterSheetCreator() {
     const [charInfo, setCharInfo] = useState(null)
     const [stats, setStats] = useState(null)
 
-    const [abilitiesTypePage, setAbilitiesTypePage] = useState(0)
-
     const [classData, setClassData] = useState(null)
     const [raceData, setRaceData] = useState(null)
     const [alignmentData, setAlignmentData] = useState(null)
@@ -89,6 +87,8 @@ export default function CharacterSheetCreator() {
     }
 
     const AbilitiesPanel = () => {
+
+    const [abilitiesTypePage, setAbilitiesTypePage] = useState(0)
 
         const PointBuy = () => {
             const [pointsToBuy, setPointsToBuy] = useState(27)
@@ -185,12 +185,17 @@ export default function CharacterSheetCreator() {
             }
 
             const handlerAcceptBtn = () => {
-                setStats(new CharacterStats(strPoints, dexPoints, conPoints, intPoints, wisPoints, chaPoints))
-                console.log(stats)
+                if (pointsToBuy == 0) {
+                    setStats(new CharacterStats(strPoints, dexPoints, conPoints, intPoints, wisPoints, chaPoints))
+                    console.log(stats)
+                } else {
+                    alert(`You have ${pointsToBuy} left. Assign them to abilities`)
+                }
+                
             }
 
             return (
-                <div className="flex flex-col justify-center border-slate-700 border-2 rounded-xl p-1 m-1.5 shadow-2xl shadow-slate-700">
+                <div className="flex flex-col justify-center border-slate-700 border-2 rounded-xl p-1 shadow-2xl shadow-slate-700 sm:w-9/12 m-auto">
                     <h1 className="text-center font-bold text-5xl">Point buy</h1>
                     <p className="text-center mb-10">How it works? You have 27 points to distribute across all atributes. You cannot go above 15 and below 8 points.</p>
                     <h1 className="text-center">Points left: {pointsToBuy}</h1>
@@ -238,14 +243,20 @@ export default function CharacterSheetCreator() {
         }
 
         const StandardArrayPoints = () => {
-            const pointsArr = ["-",15, 14, 13, 12, 10, 8]
+            const [pointsArr, setPointsArr] = useState(["-",15, 14, 13, 12, 10, 8])
 
 
             const handlerSubmit = (e) => {
                 e.preventDefault()
                 const formElements = e.currentTarget.elements
-                setStats(new CharacterStats(formElements[0].value, formElements[1].value, formElements[2].value,formElements[3].value, formElements[4].value), formElements[5].value)
-                console.log(stats)
+
+                if (formElements.length !== new Set(formElements.size)) {
+                    alert('You cannot use same values more than once! Change it!')
+                }else {
+                    setStats(new CharacterStats(formElements[0].value, formElements[1].value, formElements[2].value,formElements[3].value, formElements[4].value), formElements[5].value)
+                    console.log(stats)
+                }
+                
             }
 
             return (

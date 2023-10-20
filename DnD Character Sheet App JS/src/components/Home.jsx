@@ -25,13 +25,13 @@ export default function Home() {
     }
 
     return (
-        <>
-        <h1>Witoj poszukiwaczu przygód</h1>
-        <button onClick={() => navigation('/character-sheet-creator')}>Przejdź do tworzenia postaci</button>
-        <button 
-            className="bg-orange-500 rounded-md"
-            onClick={onLogout}
-        >Logout</button>
-        </>
+        <div className="flex flex-col justify-center border-slate-700 border-2 rounded-xl p-1 m-1.5 shadow-2xl shadow-slate-700">
+            <h1 className="text-center font-bold text-4xl mb-2">Witoj poszukiwaczu przygód</h1>
+            <button className="border-slate-700 border-2 rounded-xl mb-2" onClick={() => navigation('/character-sheet-creator')}>Przejdź do tworzenia postaci</button>
+            <button 
+                className="bg-orange-500 border-slate-700 border-2 rounded-xl mb-2"
+                onClick={onLogout}
+            >Logout</button>
+        </div>
     )
 }
