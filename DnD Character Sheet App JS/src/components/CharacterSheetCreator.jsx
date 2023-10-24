@@ -5,10 +5,11 @@ import CharacterStats from "../character/CharacterStats";
 const api = 'https://www.dnd5eapi.co'
 
 export default function CharacterSheetCreator() {
-    const [characterSheet, setCharacterSheet] = useState({})
 
     const [charInfo, setCharInfo] = useState(null)
     const [stats, setStats] = useState(null)
+
+    const [profBonus, setProfBonus] = useState(null)
 
     const [classData, setClassData] = useState(null)
     const [raceData, setRaceData] = useState(null)
@@ -33,24 +34,69 @@ export default function CharacterSheetCreator() {
         
         function handlerSubmit(e) {
             e.preventDefault();
-            
-            const formElements = e.currentTarget.elements
-            setCharInfo(new CharacterInfo(formElements[0].value, formElements[1].value, formElements[2].value,formElements[3].value, formElements[4].value))
-            console.log(stats)
-        }
     
+            const formElements = e.currentTarget.elements
+            const newCharacterInfo = new CharacterInfo(
+                formElements.level.value,
+                formElements.charName.value,
+                formElements.class.value,
+                formElements.race.value,
+                formElements.background.value,
+                formElements.alignment.value
+            )
+            setCharInfo(newCharacterInfo)
+        
+            if (formElements.level.value <= 5){
+                setProfBonus(2)
+            } else if (formElements.level.value <= 9) {
+                setProfBonus(4)
+            } else if (formElements.level.value <= 13) {
+                setProfBonus(5)
+            } else if (formElements.level.value <= 17) {
+                setProfBonus(6)
+            }
+
+            console.log(charInfo);
+        }
 
         return (
-            <div className="flex flex-col justify-center items-center">
+            <>
+            {!charInfo &&
+            <div className="flex flex-col justify-center items-center w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
                 <h2 className="text-center text-slate-700 text-4xl font-bold mb-5">Main info</h2>
                     <form onSubmit={handlerSubmit} className="flex flex-col items-center border-2 border-slate-700 rounded-2xl shadow-lg shadow-slate-700 mb-10 p-1">
+                        <label className=" text-xl m-5 flex flex-col items-center">
+                            What is your character level?
+                            <select name="level">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17 ">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                            </select>
+                        </label>
                         <label className=" text-xl m-5 flex flex-col items-center">
                             Whats your character name?
                             <input name="charName"/>
                         </label>
                         <label className="text-xl m-5 flex flex-col items-center">
                             Class:
-                            <select>
+                            <select name="class">
                                 {!classData && <option>Loading data...</option>}
                                 {classData && classData.results.map((e, index) =>{
                                     return <option key={index} value={e.index}>{e.name}</option>
@@ -60,7 +106,7 @@ export default function CharacterSheetCreator() {
                         </label>
                         <label className="text-xl m-5 flex flex-col items-center">
                             Race:
-                            <select>
+                            <select name="race">
                                 {!raceData && <option>Loading data...</option>}
                                 {raceData && raceData.results.map((e, index) => {
                                     return <option key={index} value={e.index}>{e.name}</option>
@@ -73,7 +119,7 @@ export default function CharacterSheetCreator() {
                         </label>
                         <label className="text-xl m-5 flex flex-col items-center">
                             Alignment:
-                            <select>
+                            <select name="alignment">
                                 {!alignmentData && <option>Loading Data...</option>}
                                 {alignmentData && alignmentData.results.map((e, index) => {
                                     return <option key={index} value={e.index}>{e.name}</option>
@@ -82,7 +128,19 @@ export default function CharacterSheetCreator() {
                         </label>
                         <button className="bg-orange-500 rounded-md p-2 border-slate-700 border-2 font-bold" type="submit">Next</button>
                     </form>
-            </div>
+            </div>}
+            { charInfo && (
+                <div className="flex flex-col justify-center items-center border-2 border-slate-700 rounded-xl shadow-2xl w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
+                    <h1 className="text-base font-bold">{charInfo.name} - {charInfo.lvl} Level</h1>
+                    <div  className="flex justify-center items-center gap-3">
+                        <h2 className="text-sm">Class: {charInfo.class}</h2>
+                        <h2 className="text-sm">Race: {charInfo.race}</h2>
+                        <h2 className="text-sm">Background: {charInfo.background}</h2>
+                        <h2 className="text-sm">Alignment: {charInfo.alignment}</h2>
+                    </div>
+                    <p className="text-xs">Proficiency bonus: {profBonus}</p>
+                </div>)}
+            </>
         )
     }
 
@@ -100,102 +158,222 @@ export default function CharacterSheetCreator() {
             const [wisPoints, setWisPoints] = useState(8)
             const [chaPoints, setChaPoints] = useState(8)
             
-            //Strenght
-            const handlerPlusStrBtn = () => {
-                if (pointsToBuy > 0 && strPoints < 15) {
-                    setStrPoints((prev) => prev + 1)
+            //Increasing points logic where 'typeOfStatisic' is given statictic type 
+            function pointPlus(statisticName,typeOfStatistic)
+            {
+                if (pointsToBuy > 0 && typeOfStatistic < 13) {
+                    switch(statisticName)
+                    {
+                        case "str":
+                            setStrPoints((prev) => prev + 1)
+                            break;
+                        case "dex":
+                            setDexPoints((prev) => prev + 1)
+                            break;
+                        case "con":
+                            setConPoints((prev) => prev + 1)
+                            break;
+                        case "int":
+                            setIntPoints((prev) => prev + 1)
+                            break;
+                        case "wis":
+                            setWisPoints((prev) => prev + 1)
+                            break;
+                        case "cha":
+                            setChaPoints((prev) => prev + 1)
+                            break;
+                    }
                     setPointsToBuy((prev) => prev - 1)
+                } else if (pointsToBuy >= 2 && typeOfStatistic < 15) {
+                    switch(statisticName)
+                    {
+                        case "str":
+                            setStrPoints((prev) => prev + 1)
+                            break;
+                        case "dex":
+                            setDexPoints((prev) => prev + 1)
+                            break;
+                        case "con":
+                            setConPoints((prev) => prev + 1)
+                            break;
+                        case "int":
+                            setIntPoints((prev) => prev + 1)
+                            break;
+                        case "wis":
+                            setWisPoints((prev) => prev + 1)
+                            break;
+                        case "cha":
+                            setChaPoints((prev) => prev + 1)
+                            break;
+                    }
+                    setPointsToBuy((prev) => prev - 2)
                 }
             }
-            const handlerMinusStrBtn = () => {
-                if (pointsToBuy < 27 && strPoints > 8) {
-                    setStrPoints((prev) => prev - 1)
+            //Decreasing points logic where 'typeOfStatisic' is given statictic type 
+            function pointMinus(statisticName,typeOfStatistic)
+            {
+                if (pointsToBuy < 27 && typeOfStatistic > 8 && typeOfStatistic <= 13) {
+                    switch(statisticName)
+                    {
+                        case "str":
+                            setStrPoints((prev) => prev - 1)
+                            break;
+                        case "dex":
+                            setDexPoints((prev) => prev - 1)
+                            break;
+                        case "con":
+                            setConPoints((prev) => prev - 1)
+                            break;
+                        case "int":
+                            setIntPoints((prev) => prev - 1)
+                            break;
+                        case "wis":
+                            setWisPoints((prev) => prev - 1)
+                            break;
+                        case "cha":
+                            setChaPoints((prev) => prev - 1)
+                            break;
+                    }
                     setPointsToBuy((prev) => prev + 1)
+                } else if (pointsToBuy < 27 && typeOfStatistic <= 15 && typeOfStatistic > 8) {
+                    switch(statisticName)
+                    {
+                        case "str":
+                            setStrPoints((prev) => prev - 1)
+                            break;
+                        case "dex":
+                            setDexPoints((prev) => prev - 1)
+                            break;
+                        case "con":
+                            setConPoints((prev) => prev - 1)
+                            break;
+                        case "int":
+                            setIntPoints((prev) => prev - 1)
+                            break;
+                        case "wis":
+                            setWisPoints((prev) => prev - 1)
+                            break;
+                        case "cha":
+                            setChaPoints((prev) => prev - 1)
+                            break;
+                    }
+                    setPointsToBuy((prev) => prev + 2)
                 }
+            }
+            //Strenght
+            const handlerPlusStrBtn = () => {
+               pointPlus("str",strPoints)
+            }
+            const handlerMinusStrBtn = () => {
+               pointMinus("str",strPoints)
             }
 
             //Dexterity
             const handlerPlusDexBtn = () => {
-                if (pointsToBuy > 0 && dexPoints < 15) {
-                    setDexPoints((prev) => prev + 1)
-                    setPointsToBuy((prev) => prev - 1)
-                }
+                pointPlus("dex",dexPoints)
             }
             const handlerMinusDexBtn = () => {
-                if (pointsToBuy < 27 && dexPoints > 8) {
-                    setDexPoints((prev) => prev - 1)
-                    setPointsToBuy((prev) => prev + 1)
-                }
+                pointMinus("dex",dexPoints)
             }
 
             //Constitution
             const handlerPlusConBtn = () => {
-                if (pointsToBuy > 0 && conPoints < 15) {
-                    setConPoints((prev) => prev + 1)
-                    setPointsToBuy((prev) => prev - 1)
-                }
+                pointPlus("con",conPoints)
             }
             const handlerMinusConBtn = () => {
-                if (pointsToBuy < 27 && conPoints > 8) {
-                    setConPoints((prev) => prev - 1)
-                    setPointsToBuy((prev) => prev + 1)
-                }
+               pointMinus("con",conPoints)
             }
 
             //Intelligence
             const handlerPlusIntBtn = () => {
-                if (pointsToBuy > 0 && intPoints < 15) {
-                    setIntPoints((prev) => prev + 1)
-                    setPointsToBuy((prev) => prev - 1)
-                }
+               pointPlus("int",intPoints)
             }
             const handlerMinusIntBtn = () => {
-                if (pointsToBuy < 27 && intPoints > 8) {
-                    setIntPoints((prev) => prev - 1)
-                    setPointsToBuy((prev) => prev + 1)
-                }
+               pointMinus("int",intPoints)
             }
 
             //Wisdom
             const handlerPlusWisBtn = () => {
-                if (pointsToBuy > 0 && wisPoints < 15) {
-                    setWisPoints((prev) => prev + 1)
-                    setPointsToBuy((prev) => prev - 1)
-                }
+                pointPlus("wis",wisPoints)
             }
             const handlerMinusWisBtn = () => {
-                if (pointsToBuy < 27 && wisPoints > 8) {
-                    setWisPoints((prev) => prev - 1)
-                    setPointsToBuy((prev) => prev + 1)
-                }
+                pointMinus("wis",wisPoints)
             }
 
             //Charisma
             const handlerPlusChaBtn = () => {
-                if (pointsToBuy > 0 && chaPoints < 15) {
-                    setChaPoints((prev) => prev + 1)
-                    setPointsToBuy((prev) => prev - 1)
-                }
+                pointPlus("cha",chaPoints)
             }
             const handlerMinusChaBtn = () => {
-                if (pointsToBuy < 27 && chaPoints > 8) {
-                    setChaPoints((prev) => prev - 1)
-                    setPointsToBuy((prev) => prev + 1)
-                }
+                pointMinus("cha",chaPoints)
             }
 
             const handlerAcceptBtn = () => {
-                if (pointsToBuy == 0) {
-                    setStats(new CharacterStats(strPoints, dexPoints, conPoints, intPoints, wisPoints, chaPoints))
-                    console.log(stats)
+                if (pointsToBuy === 0) {
+                    let updatedStr = strPoints;
+                    let updatedDex = dexPoints;
+                    let updatedCon = conPoints;
+                    let updatedInt = intPoints;
+                    let updatedWis = wisPoints;
+                    let updatedCha = chaPoints;
+            
+                    // Check the selected bonus for +2
+                    const bonusTwo = document.querySelector('#BonusTwo').value;
+                    switch (bonusTwo) {
+                        case "str":
+                            updatedStr += 2;
+                            break;
+                        case "dex":
+                            updatedDex += 2;
+                            break;
+                        case "con":
+                            updatedCon += 2;
+                            break;
+                        case "int":
+                            updatedInt += 2;
+                            break;
+                        case "wis":
+                            updatedWis += 2;
+                            break;
+                        case "cha":
+                            updatedCha += 2;
+                            break;
+                    }
+            
+                    // Check the selected bonus for +1
+                    const bonusOne = document.querySelector('#BonusOne').value;
+                    switch (bonusOne) {
+                        case "str":
+                            updatedStr += 1;
+                            break;
+                        case "dex":
+                            updatedDex += 1;
+                            break;
+                        case "con":
+                            updatedCon += 1;
+                            break;
+                        case "int":
+                            updatedInt += 1;
+                            break;
+                        case "wis":
+                            updatedWis += 1;
+                            break;
+                        case "cha":
+                            updatedCha += 1;
+                            break;
+                    }
+
+                    const updatedStats = new CharacterStats(updatedStr, updatedDex, updatedCon, updatedInt, updatedWis, updatedCha);
+                    setStats(updatedStats);
+                    console.log(stats);
+            
                 } else {
-                    alert(`You have ${pointsToBuy} left. Assign them to abilities`)
+                    alert(`You have ${pointsToBuy} left. Assign them to abilities`);
                 }
-                
-            }
+            };
 
             return (
-                <div className="flex flex-col justify-center border-slate-700 border-2 rounded-xl p-1 shadow-2xl shadow-slate-700 sm:w-9/12 m-auto">
+                <div className="flex flex-col justify-center border-slate-700 border-2 rounded-xl p-1 shadow-2xl shadow-slate-700 w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
                     <h1 className="text-center font-bold text-5xl">Point buy</h1>
                     <p className="text-center mb-10">How it works? You have 27 points to distribute across all atributes. You cannot go above 15 and below 8 points.</p>
                     <h1 className="text-center">Points left: {pointsToBuy}</h1>
@@ -237,13 +415,36 @@ export default function CharacterSheetCreator() {
                             <h2 className="text-center text-xl">CHA</h2>
                         </div>
                     </div>
+                    <h2 className="text-center my-3">Add +2 and +1 for two of your main stats</h2>
+                    <label className="text-center" >
+                        + 2 for: 
+                        <select id="BonusTwo">
+                            <option value="str">Strenght</option>
+                            <option value="dex">Dexterity</option>
+                            <option value="con">Constitution</option>
+                            <option value="int">Inteligance</option>
+                            <option value="wis">Wisdom</option>
+                            <option value="cha">Charisma</option>
+                        </select>
+                    </label>
+                    <label className="text-center">
+                        + 1 for: 
+                        <select id="BonusOne">
+                            <option value="str">Strenght</option>
+                            <option value="dex">Dexterity</option>
+                            <option value="con">Constitution</option>
+                            <option value="int">Inteligance</option>
+                            <option value="wis">Wisdom</option>
+                            <option value="cha">Charisma</option>
+                        </select>
+                    </label>
                     <button className="m-1 font-bold " onClick={handlerAcceptBtn}>Accept</button>
                 </div>
             )
         }
 
         const StandardArrayPoints = () => {
-            const [pointsArr, setPointsArr] = useState(["-",15, 14, 13, 12, 10, 8])
+            const pointsArr = ["-",15, 14, 13, 12, 10, 8]
 
 
             const handlerSubmit = (e) => {
@@ -260,7 +461,7 @@ export default function CharacterSheetCreator() {
             }
 
             return (
-                <div className="border-slate-700 border-2 rounded-2xl m-1 p-2 shadow-2xl shadow-slate-700">
+                <div className="border-slate-700 border-2 rounded-2xl p-2 shadow-2xl shadow-slate-700 w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
                     <h1 className="text-center font-bold my-2">Standard Array of Ability Points</h1>
                     <p className="text-center text-slate-700">How it works? The standard array is a specific set of scores, which in D&D 5th edition is [15, 14, 13, 12, 10, 8]. Assign each of the numbers to the stats.</p>
                     <form className="flex flex-col items-center gap-2 my-5 border-slate-700 border-2 rounded-2xl" onSubmit={handlerSubmit}>
@@ -396,7 +597,7 @@ export default function CharacterSheetCreator() {
             }
 
             return(
-                <div className="flex flex-col border-slate-700 border-2 rounded-2xl mx-1 shadow-2xl shadow-slate-700">
+                <div className="flex flex-col border-slate-700 border-2 rounded-2xl shadow-2xl shadow-slate-700 w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
                     <h1 className="text-center font-bold my-2">Roll your stats!</h1>
                     <p className="text-center italic my-2">How it works? Click &quot;Roll&quot; button to roll 4d6 dices and dropping the lowes number, and adding the remaining total</p>
                     {!rolls && <h2>Waiting to roll dices!</h2>}
@@ -444,7 +645,8 @@ export default function CharacterSheetCreator() {
         }
 
         return (
-            <div>
+            <div className="w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
+            {!stats && charInfo && <div className="my-20">
                 <h1 className="text-center text-slate-700 font-bold text-4xl">Abilities</h1>
                 <p className="text-center text-slate-700">Select type of point distribution</p>
                 <nav className="flex justify-center space-x-4 my-5">
@@ -455,6 +657,179 @@ export default function CharacterSheetCreator() {
                 {abilitiesTypePage == 1 && <PointBuy />}
                 {abilitiesTypePage == 2 && <StandardArrayPoints />}
                 {abilitiesTypePage == 3 && <PointsRoll />}
+            </div>
+            }
+            {stats && <div className="flex ">
+                {stats.abilities.map((e, index) => {
+                    return (
+                    <div key={index} className="flex flex-col border-2 border-slate-700 rounded-xl w-1/6 my-5">
+                        <h1 className="text-center font-bold">{e.modifier}</h1>
+                        <h1 className="text-center text-sm">{e.name}</h1>
+                        <h1 className="border-2 border-slate-700 rounded-2xl text-center font-thin translate-y-1/3 translate-x-1/4 w-2/3 bg-white">{e.score}</h1>
+                    </div>
+                    )
+                })}
+                
+            </div>}
+            </div>
+        )
+    }
+
+    const ProficiencyPanel = () => {
+
+        return (
+            <>
+            {stats && 
+            <>
+            <SavingThrowPanel />
+            <SkillsPanel />
+            </>
+            }
+            </>
+        )
+    }
+
+    const SavingThrowPanel = () => {
+        const [s, setS] = useState(stats)
+
+        const handleChkStr = (e) => {
+            const updatedStats = {...s}
+            if (e.target.checked) {
+                updatedStats.savingThrows[0].proficient = true
+                updatedStats.savingThrows[0].modifier = updatedStats.savingThrows[0].modifier + profBonus
+            } else {
+                updatedStats.savingThrows[0].proficient = false
+                updatedStats.savingThrows[0].modifier = updatedStats.savingThrows[0].modifier - profBonus
+            }
+            setS(updatedStats)
+        }
+
+        const handleChkDex = (e) => {
+            const updatedStats = {...s}
+            if (e.target.checked) {
+                updatedStats.savingThrows[1].proficient = true
+                updatedStats.savingThrows[1].modifier = updatedStats.savingThrows[1].modifier + profBonus
+            } else {
+                updatedStats.savingThrows[1].proficient = false
+                updatedStats.savingThrows[1].modifier = updatedStats.savingThrows[1].modifier - profBonus
+            }
+            setS(updatedStats)
+        }
+
+        const handleChkCon = (e) => {
+            const updatedStats = {...s}
+            if (e.target.checked) {
+                updatedStats.savingThrows[2].proficient = true
+                updatedStats.savingThrows[2].modifier = updatedStats.savingThrows[2].modifier + profBonus
+            } else {
+                updatedStats.savingThrows[2].proficient = false
+                updatedStats.savingThrows[2].modifier = updatedStats.savingThrows[2].modifier - profBonus
+            }
+            setS(updatedStats)
+        }
+
+        const handleChkInt = (e) => {
+            const updatedStats = {...s}
+            if (e.target.checked) {
+                updatedStats.savingThrows[3].proficient = true
+                updatedStats.savingThrows[3].modifier = updatedStats.savingThrows[3].modifier + profBonus
+            } else {
+                updatedStats.savingThrows[3].proficient = false
+                updatedStats.savingThrows[3].modifier = updatedStats.savingThrows[3].modifier - profBonus
+            }
+            setS(updatedStats)
+        }
+
+        const handleChkWis = (e) => {
+            const updatedStats = {...s}
+            if (e.target.checked) {
+                updatedStats.savingThrows[4].proficient = true
+                updatedStats.savingThrows[4].modifier = updatedStats.savingThrows[4].modifier + profBonus
+            } else {
+                updatedStats.savingThrows[4].proficient = false
+                updatedStats.savingThrows[4].modifier = updatedStats.savingThrows[4].modifier - profBonus
+            }
+            setS(updatedStats)
+        }
+
+        const handleChkCha = (e) => {
+            const updatedStats = {...s}
+            if (e.target.checked) {
+                updatedStats.savingThrows[5].proficient = true
+                updatedStats.savingThrows[5].modifier = updatedStats.savingThrows[5].modifier + profBonus
+            } else {
+                updatedStats.savingThrows[5].proficient = false
+                updatedStats.savingThrows[5].modifier = updatedStats.savingThrows[5].modifier - profBonus
+            }
+            setS(updatedStats)
+        }
+
+        return (
+            <div className="flex flex-col border-2 border-slate-700 shadow-2xl rounded-2xl w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 mx-auto my-10">
+                {!stats && <h1 className="animate-pulse text-center font-bold">Waiting for Stats...</h1>}
+                {stats &&
+                <>
+                <h1 className="text-center m-2">Set your saving throw proficiency</h1>
+                <label className="text-center">
+                    <input type="checkbox" onChange={handleChkStr}/>
+                    Strenght: {stats.savingThrows[0].modifier}
+                </label>
+                <label className="text-center">
+                    <input type="checkbox" onChange={handleChkDex} />
+                    Dexterity: {stats.savingThrows[1].modifier}
+                </label>
+                <label className="text-center">
+                    <input type="checkbox" onChange={handleChkCon} />
+                    Constitution: {stats.savingThrows[2].modifier}
+                </label>
+                <label className="text-center">
+                    <input type="checkbox" onChange={handleChkInt} />
+                    Inteligance: {stats.savingThrows[3].modifier}
+                </label>
+                <label className="text-center">
+                    <input type="checkbox" onChange={handleChkWis} />
+                    Wisdom: {stats.savingThrows[4].modifier}
+                </label>
+                <label className="text-center">
+                    <input type="checkbox" onChange={handleChkCha} />
+                    Charisma: {stats.savingThrows[5].modifier}
+                </label>
+                <button className="m-2 border-2 border-slate-700 font-bold">Accept Saving Throws Proficiency</button>
+                </>}
+            </div>
+        )
+    }
+
+    const SkillsPanel = () => {
+        const [s, setS] = useState(stats)
+
+        const handleChk = (e, skillIndex) => {
+            const updatedStats = { ...s }
+            if (e.target.checked) {
+                updatedStats.skills[skillIndex].proficient = true
+                updatedStats.skills[skillIndex].modifier += profBonus
+            } else {
+                updatedStats.skills[skillIndex].proficient = false
+                updatedStats.skills[skillIndex].modifier -= profBonus
+            }
+            setS(updatedStats)
+        }
+        
+        return (
+            <div className="flex flex-col items-center border-2 border-slate-700 rounded-xl shadow-2xl w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 mx-auto my-5">
+                {!stats && <h1 className="animate-pulse text-center font-bold">Waiting for Stats...</h1>}
+                {stats && <>
+                <h1>Set your skill proficiency</h1>
+                {stats.skills.map((e, index) => {
+                    return (
+                        <label key={index}>
+                            <input key={index} type="checkbox" onChange={(e) => handleChk(e, index)}></input>
+                            {e.name}: {e.modifier} ({e.ability})
+                        </label>
+                    )
+                })}
+                <button className="m-2 border-2 border-slate-700 font-bold">Assign Skill Proficiency</button>
+                </>}
             </div>
         )
     }
@@ -467,6 +842,7 @@ export default function CharacterSheetCreator() {
         <h1 className="text-center text-5xl font-bold text-slate-700 mb-10">Create your character!</h1>
         <MainInfoPanel />
         <AbilitiesPanel />
+        <ProficiencyPanel />
         </div>
     )
 } 
