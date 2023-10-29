@@ -448,22 +448,98 @@ export default function CharacterSheetCreator() {
 
 
             const handlerSubmit = (e) => {
-                e.preventDefault()
+
                 const formElements = e.currentTarget.elements
 
-                if (formElements.length !== new Set(formElements.size)) {
-                    alert('You cannot use same values more than once! Change it!')
-                }else {
-                    setStats(new CharacterStats(formElements[0].value, formElements[1].value, formElements[2].value,formElements[3].value, formElements[4].value), formElements[5].value)
+                let updatedStr = Number(formElements[0].value)
+                let updatedDex = Number(formElements[1].value)
+                let updatedCon = Number(formElements[2].value)
+                let updatedInt = Number(formElements[3].value)
+                let updatedWis = Number(formElements[4].value)
+                let updatedCha = Number(formElements[5].value)
+
+                    const bonusTwo = document.querySelector('#BonusTwo').value;
+                    switch (bonusTwo) {
+                        case "str":
+                            updatedStr += 2;
+                            break;
+                        case "dex":
+                            updatedDex += 2;
+                            break;
+                        case "con":
+                            updatedCon += 2;
+                            break;
+                        case "int":
+                            updatedInt += 2;
+                            break;
+                        case "wis":
+                            updatedWis += 2;
+                            break;
+                        case "cha":
+                            updatedCha += 2;
+                            break;
+                    }
+            
+                    const bonusOne = document.querySelector('#BonusOne').value;
+                    switch (bonusOne) {
+                        case "str":
+                            console.log(updatedStr)
+                            updatedStr += 1;
+                            console.log(updatedStr)
+                            break;
+                        case "dex":
+                            updatedDex += 1;
+                            break;
+                        case "con":
+                            updatedCon += 1;
+                            break;
+                        case "int":
+                            updatedInt += 1;
+                            break;
+                        case "wis":
+                            updatedWis += 1;
+                            break;
+                        case "cha":
+                            updatedCha += 1;
+                            break;
+                    }
+
+                    const updatedStats = new CharacterStats(updatedStr, updatedDex, updatedCon, updatedInt, updatedWis, updatedCha)
+                    setStats(updatedStats)
                     console.log(stats)
                 }
                 
-            }
+            
 
             return (
                 <div className="border-slate-700 border-2 rounded-2xl p-2 shadow-2xl shadow-slate-700 w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
                     <h1 className="text-center font-bold my-2">Standard Array of Ability Points</h1>
                     <p className="text-center text-slate-700">How it works? The standard array is a specific set of scores, which in D&D 5th edition is [15, 14, 13, 12, 10, 8]. Assign each of the numbers to the stats.</p>
+                    <div className="flex flex-col my-2">
+                        <h2 className="text-center my-3">Add +2 and +1 for two of your main stats</h2>
+                        <label className="text-center" >
+                            + 2 for: 
+                            <select id="BonusTwo">
+                                <option value="str">Strenght</option>
+                                <option value="dex">Dexterity</option>
+                                <option value="con">Constitution</option>
+                                <option value="int">Inteligance</option>
+                                <option value="wis">Wisdom</option>
+                                <option value="cha">Charisma</option>
+                            </select>
+                        </label>
+                        <label className="text-center">
+                            + 1 for: 
+                            <select id="BonusOne">
+                                <option value="str">Strenght</option>
+                                <option value="dex">Dexterity</option>
+                                <option value="con">Constitution</option>
+                                <option value="int">Inteligance</option>
+                                <option value="wis">Wisdom</option>
+                                <option value="cha">Charisma</option>
+                            </select>
+                        </label>
+                    </div>
                     <form className="flex flex-col items-center gap-2 my-5 border-slate-700 border-2 rounded-2xl" onSubmit={handlerSubmit}>
                         <label>
                             Strenght
@@ -527,6 +603,7 @@ export default function CharacterSheetCreator() {
                         </label>
                         <button className="bg-orange-500 font-bold m-1" type="submit">Accept</button>
                     </form>
+                    
                 </div>
             )
         }
@@ -553,7 +630,61 @@ export default function CharacterSheetCreator() {
             }
 
             const handlerStatBtn = () => {
-                setStats(new CharacterStats(strPoints, dexPoints, conPoints, intPoints, wisPoints, chaPoints))
+                let updatedStr = strPoints;
+                let updatedDex = dexPoints;
+                let updatedCon = conPoints;
+                let updatedInt = intPoints;
+                let updatedWis = wisPoints;
+                let updatedCha = chaPoints;
+
+                 // Check the selected bonus for +2
+                 const bonusTwo = document.querySelector('#BonusTwo').value;
+                 switch (bonusTwo) {
+                     case "str":
+                         updatedStr += 2;
+                         break;
+                     case "dex":
+                         updatedDex += 2;
+                         break;
+                     case "con":
+                         updatedCon += 2;
+                         break;
+                     case "int":
+                         updatedInt += 2;
+                         break;
+                     case "wis":
+                         updatedWis += 2;
+                         break;
+                     case "cha":
+                         updatedCha += 2;
+                         break;
+                 }
+         
+                 // Check the selected bonus for +1
+                 const bonusOne = document.querySelector('#BonusOne').value;
+                 switch (bonusOne) {
+                     case "str":
+                         updatedStr += 1;
+                         break;
+                     case "dex":
+                         updatedDex += 1;
+                         break;
+                     case "con":
+                         updatedCon += 1;
+                         break;
+                     case "int":
+                         updatedInt += 1;
+                         break;
+                     case "wis":
+                         updatedWis += 1;
+                         break;
+                     case "cha":
+                         updatedCha += 1;
+                         break;
+                    }
+                
+                let updatedStats = new CharacterStats(updatedStr, updatedDex, updatedCon, updatedInt, updatedWis, updatedCha)
+                setStats(updatedStats)
                 console.log(stats)
             }
 
@@ -639,13 +770,36 @@ export default function CharacterSheetCreator() {
                         <h3>Wisdom: {wisPoints}</h3>
                         <h3>Charisma: {chaPoints}</h3>
                     </div>
+                    <h2 className="text-center my-3">Add +2 and +1 for two of your main stats</h2>
+                    <label className="text-center" >
+                        + 2 for: 
+                        <select id="BonusTwo">
+                            <option value="str">Strenght</option>
+                            <option value="dex">Dexterity</option>
+                            <option value="con">Constitution</option>
+                            <option value="int">Inteligance</option>
+                            <option value="wis">Wisdom</option>
+                            <option value="cha">Charisma</option>
+                        </select>
+                    </label>
+                    <label className="text-center">
+                        + 1 for: 
+                        <select id="BonusOne">
+                            <option value="str">Strenght</option>
+                            <option value="dex">Dexterity</option>
+                            <option value="con">Constitution</option>
+                            <option value="int">Inteligance</option>
+                            <option value="wis">Wisdom</option>
+                            <option value="cha">Charisma</option>
+                        </select>
+                    </label>
                     <button onClick={handlerStatBtn} className="font-bold m-1">Assign to stat</button>
                 </div>
             )
         }
 
         return (
-            <div className="w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto">
+            <div className="">
             {!stats && charInfo && <div className="my-20">
                 <h1 className="text-center text-slate-700 font-bold text-4xl">Abilities</h1>
                 <p className="text-center text-slate-700">Select type of point distribution</p>
@@ -672,20 +826,6 @@ export default function CharacterSheetCreator() {
                 
             </div>}
             </div>
-        )
-    }
-
-    const ProficiencyPanel = () => {
-
-        return (
-            <>
-            {stats && 
-            <>
-            <SavingThrowPanel />
-            <SkillsPanel />
-            </>
-            }
-            </>
         )
     }
 
@@ -765,11 +905,12 @@ export default function CharacterSheetCreator() {
         }
 
         return (
-            <div className="flex flex-col border-2 border-slate-700 shadow-2xl rounded-2xl w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 mx-auto my-10">
+            <div className="flex flex-col border-2 border-slate-700 shadow-2xl rounded-2xl w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 mx-auto my-10 p-2">
                 {!stats && <h1 className="animate-pulse text-center font-bold">Waiting for Stats...</h1>}
                 {stats &&
                 <>
                 <h1 className="text-center m-2">Set your saving throw proficiency</h1>
+                <p className="text-center">Set 2 abilities that you have proficient in saving throws</p>
                 <label className="text-center">
                     <input type="checkbox" onChange={handleChkStr}/>
                     Strenght: {stats.savingThrows[0].modifier}
@@ -794,7 +935,6 @@ export default function CharacterSheetCreator() {
                     <input type="checkbox" onChange={handleChkCha} />
                     Charisma: {stats.savingThrows[5].modifier}
                 </label>
-                <button className="m-2 border-2 border-slate-700 font-bold">Accept Saving Throws Proficiency</button>
                 </>}
             </div>
         )
@@ -816,7 +956,7 @@ export default function CharacterSheetCreator() {
         }
         
         return (
-            <div className="flex flex-col items-center border-2 border-slate-700 rounded-xl shadow-2xl w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 mx-auto my-5">
+            <div className="flex flex-col items-center border-2 border-slate-700 rounded-xl shadow-2xl w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 mx-auto my-5 p-2">
                 {!stats && <h1 className="animate-pulse text-center font-bold">Waiting for Stats...</h1>}
                 {stats && <>
                 <h1>Set your skill proficiency</h1>
@@ -828,14 +968,29 @@ export default function CharacterSheetCreator() {
                         </label>
                     )
                 })}
-                <button className="m-2 border-2 border-slate-700 font-bold">Assign Skill Proficiency</button>
                 </>}
             </div>
         )
     }
 
+    const ProficiencyPanel = () => {
 
+        const btnHandler = () => {
 
+        }
+
+        return (
+            <>
+            {stats && 
+            <div className="flex flex-col items-center">
+                <SavingThrowPanel />
+                <SkillsPanel />
+                <button className=" m-auto border-2 border-slate-700 font-bold" onClick={btnHandler}>Next</button>
+            </div>
+            }
+            </>
+        )
+    }
 
     return (
         <div>
@@ -845,4 +1000,4 @@ export default function CharacterSheetCreator() {
         <ProficiencyPanel />
         </div>
     )
-} 
+}

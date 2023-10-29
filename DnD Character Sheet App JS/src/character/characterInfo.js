@@ -19,4 +19,28 @@ export default class CharacterInfo{
     getCharacterInfo() {
         return this.characterInfo
     }
+    
+    setCharacterLevel(level) {
+        this.lvl = level
+    }
+
+    setCharacterName(name) {
+        this.name = name
+    }
+
+    setCharacterClass(charClass) {
+        this.class = charClass
+    }
+
+    setCharacterRace(race) {
+        this.race = race
+    }
+
+    setCharacterBackground(background) {
+        this.background = background
+    }
+
+    setCharacterAlignment(alignment) {
+        this.alignment = alignment
+    }
 }
