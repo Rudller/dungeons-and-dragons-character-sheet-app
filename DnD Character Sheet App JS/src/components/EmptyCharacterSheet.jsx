@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import CharacterStats from "../character/CharacterStats";
+import supabase from "../config/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
-
+const api = 'https://www.dnd5eapi.co'
 
 export default function EmptyCharacterSheet() {
 
-    //const [stats, setStats] = useState(new CharacterStats(charLvl, charName, charClass, charRace, charBackground, charAlignment, charStr, charDex, charCon, charInt, charWis, charCha))
+    const navigation = useNavigate()
 
+    //Api Fetch
+    const [proficienciesData, setProficienciesData] = useState(null)
+    const [languagesData, setLanguagesData] = useState(null)
+    
     //Char Info Variables
     const [charLvl, setCharLvl] = useState('');
     const [charName, setCharName] = useState('');
@@ -31,7 +37,21 @@ export default function EmptyCharacterSheet() {
     const [maxHP, setMaxHP] = useState(0)
     const [hitDice, setHitDice] = useState(8)
 
+    const [charProficiencies, setCharProficiencies] = useState([])
+    const [charLang, setCharLang] = useState([])
+    const [charFeats, setCharFeats] = useState('')
+
     const [stats, setStats] = useState(new CharacterStats(charLvl, charName, charClass, charRace, charBackground, charAlignment, charStr, charDex, charCon, charInt, charWis, charCha))
+
+    useEffect(() => {
+        fetch(`${api}/api/proficiencies`)
+            .then((r) => r.json())
+            .then((data) => setProficienciesData(data))
+
+        fetch(`${api}/api/languages`)
+            .then((r) => r.json())
+            .then((data) => setLanguagesData(data))
+    }, [])
 
     useEffect(() => {
         setStats({
@@ -57,6 +77,9 @@ export default function EmptyCharacterSheet() {
 
             maxHP: maxHP,
             hitDice: hitDice,
+
+            charProficiencies: charProficiencies,
+            feats: charFeats,
 
             abilities: [
                 {name: 'Strength', abbreviation: 'STR', score: charStr, modifier: Math.floor((charStr-10)/2)},
@@ -125,16 +148,42 @@ export default function EmptyCharacterSheet() {
         setStats(updatedStatsSkill)
     }
 
+    const profSubmitHandler = (e) => {
+        e.preventDefault()
+        const formElements = e.currentTarget.elements
+        setCharProficiencies(prev => [...prev, formElements[0].value])
+    }
+
+    const langSubmitHandler = (e) => {
+        e.preventDefault()
+        const formElements = e.currentTarget.elements
+        setCharLang(prev => [...prev, formElements[0].value])
+    }
+
+    async function SavingHandleBtn() {
+        const jsonStats = [JSON.stringify(stats)]
+        const { data, error } = await supabase
+            .from('CharacterSheets')
+            .insert([
+                { character: jsonStats }
+            ])
+            .select()
+
+        navigation('/')
+        
+        console.log(data, error)
+    }
+
     
     return (
-        <div className="w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 m-auto flex flex-col items-center">
+        <div className="w-11/12 sm:w-9/12 lg:w-1/2 mx-auto my-5 flex flex-col items-center">
             {/* Main Info */}
             <div className="flex justify-center items-center m-auto border border-black px-3 py-2 rounded-xl">
                 <div className="mt-1 w-1/2 -translate-y-2">
                     <label className="text-xs font-bold">Character Name</label>
                     <input value={charName} onChange={(e) => setCharName(e.target.value)} className="w-full border border-grey-300 px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 -translate-x-1" />
                     <label className="text-xs font-bold block">Level</label>
-                    <select value={charLvl} onChange={(e) => {setCharLvl(e.target.value); setProfBonus((this.lvl <= 5 ? 3 : this.lvl <= 9 ? 4 : this.lvl <= 13 ? 5 : this.lvl < 17 ? 6 : 2))}} className="border border-grey-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-lg shadow-sm translate-y-1">
+                    <select value={charLvl} onChange={(e) => {setCharLvl(e.target.value); setProfBonus((charLvl <= 5 ? 3 : charLvl <= 9 ? 4 : charLvl <= 13 ? 5 : charLvl < 17 ? 6 : 2))}} className="border border-grey-300 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-lg shadow-sm translate-y-1">
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -182,7 +231,7 @@ export default function EmptyCharacterSheet() {
             </div>
             <div className="flex justify-between mt-5 w-full">
                 {/* Ability Points */}
-                <div className="bg-gray-300 w-2/12 rounded-md flex flex-col items-stretch">
+                <div className="bg-gray-300 w-2/12 rounded-md flex flex-col justify-around items-stretch">
                     <div className="bg-white border border-black rounded-md w-10/12 mx-auto my-4">
                         <p className="text-center text-xs">Strenght</p>
                         <h1 className="text-center">{stats.abilities[0].modifier}</h1>
@@ -241,36 +290,82 @@ export default function EmptyCharacterSheet() {
                     <h3 className="font-bold text-center">Skills</h3>
                     </div>
                 </div>
-                <div className="bg-gray-300 w-1/2 rounded-md flex flex-col">
-                    {/* AC Initiative Speed */}
-                    <div className="flex justify-around mt-3">
-                        <div className="w-1/4">
-                            <input value={armorClass} onChange={(e) => setArmorClass(e.target.value)} className="shield border text-center text-2xl font-bold border-black bg-white w-full h-20"/>
-                            <p className="text-center text-sm -translate-y-20">Armor Class</p>
+                <div className="w-1/2 flex flex-col justify-start items-center">
+                    <div className="bg-gray-300 rounded-md flex flex-col justify-between">
+                        {/* AC Initiative Speed */}
+                        <div className="flex justify-around mt-3">
+                            <div className="w-1/4">
+                                <input value={armorClass} onChange={(e) => setArmorClass(e.target.value)} className="shield border text-center text-2xl font-bold border-black bg-white w-full h-20"/>
+                                <p className="text-center text-sm -translate-y-20">Armor Class</p>
+                            </div>
+                            <div className="w-1/4 ">
+                                <input value={initiative} onChange={(e) => setInitiative(e.target.value)} type="text" className="border text-center text-2xl font-bold border-black rounded-md bg-white w-full h-20"/>
+                                <p className="text-center text-sm -translate-y-20">Initiative</p>
+                            </div>
+                            <div className="w-1/4">
+                                <input value={speed} onChange={(e) => setSpeed(e.target.value)} type="text" className="border text-center text-2xl font-bold border-black rounded-md bg-white w-full h-20"/>
+                                <p className="text-center text-sm -translate-y-20">Speed</p>
+                            </div>
                         </div>
-                        <div className="w-1/4 ">
-                            <input value={initiative} onChange={(e) => setInitiative(e.target.value)} type="text" className="border text-center text-2xl font-bold border-black rounded-md bg-white w-full h-20"/>
-                            <p className="text-center text-sm -translate-y-20">Initiative</p>
-                        </div>
-                        <div className="w-1/4">
-                            <input value={speed} onChange={(e) => setSpeed(e.target.value)} type="text" className="border text-center text-2xl font-bold border-black rounded-md bg-white w-full h-20"/>
-                            <p className="text-center text-sm -translate-y-20">Speed</p>
+                        {/* Max HP and HD */}
+                        <div className="border border-black bg-white rounded-md w-11/12 mx-auto mb-3 flex gap-2 flex-col items-center justify-center">
+                            <div className="flex justify-center items-center m-2">
+                                <p className="text-sm">Maximum Hit Points: </p>
+                                <input className="w-1/12 border-b border-gray-300" type="text" value={maxHP} onChange={(e) => setMaxHP(e.target.value)}/>
+                            </div>
+                            <div className="flex justify-center m-2">
+                                <p>Hit Dice: {stats.lvl}d</p>
+                                <input className="w-1/12 border-b border-gray-300" type="text" value={hitDice} onChange={(e) => setHitDice(e.target.value)} />
+                            </div>
                         </div>
                     </div>
-                    {/* Max HP and HD */}
-                    <div className="border border-black bg-white rounded-md w-11/12 mx-auto flex gap-2 flex-col items-center justify-center">
-                        <div className="flex justify-center items-center m-2">
-                            <p className="text-sm">Maximum Hit Points: </p>
-                            <input className="w-1/12 border-b border-gray-300" type="text" value={maxHP} onChange={(e) => setMaxHP(e.target.value)}/>
-                        </div>
-                        <div className="flex justify-center m-2">
-                            <p>Hit Dice: {stats.lvl}d</p>
-                            <input className="w-1/12 border-b border-gray-300" type="text" value={hitDice} onChange={(e) => setHitDice(e.target.value)} />
-                        </div>
+                    <div className="border border-gray-300 w-full rounded-md mt-5 flex flex-col justify-center items-center">
+                        {/* Proficiencies */}
+                        <h1>Proficiencies</h1>
+                        {!proficienciesData && <h1 className="animate-pulse">Loading...</h1>}
+                        {proficienciesData && <>
+                        <form onSubmit={profSubmitHandler} className="flex flex-col justify-center items-center">
+                            <select name="proficiency" id="proficiency" className="border rounded-md my-2">
+                                {proficienciesData.results.map((e) => {
+                                    return <option key={e.index} value={e.name}>{e.name}</option>
+                                })}
+                            </select>
+                            <button type="submit">Add proficiency</button>
+                        </form>
+                        <ul className=" list-disc">
+                            {charProficiencies.map((e, i) => {
+                                return <li key={i}>{e}</li>
+                            })}
+                        </ul>
+                        </>}
                     </div>
+                    <div>
+                        {/* Languages */}
+                        {!languagesData && <h1 className="animate-pulse">Loading...</h1>}
+                        {languagesData && <div className="border border-gray-300 mt-5 flex flex-col justify-center items-center w-full rounded-md">
+                            <h1 className="my-2">Known languages</h1>
+                            <form onSubmit={langSubmitHandler}>
+                                <select id="languages">
+                                    {languagesData.results.map((e) => {
+                                        return <option key={e.index} value={e.name}>{e.name}</option>
+                                    })}
+                                </select>
+                                <button type="submit">Add Language</button>
+                            </form>
+                            <ul className=" list-disc">
+                                {charLang.map((e, i) => {
+                                    return <li key={i}>{e}</li>
+                                })}
+                            </ul>
+                        </div>}
+                    </div>
+                    <label className="flex flex-col bg-gray-300 rounded-md text-center font-bold mt-5" htmlFor="">
+                        Feats:
+                        <textarea value={charFeats} onChange={(e) => setCharFeats(e.target.value)} className="m-2 rounded font-normal" name="feats" id="feats" cols="30" rows="10"></textarea>
+                    </label>
                 </div>
             </div>
-
+            <button onClick={SavingHandleBtn} className="mt-5 w-2/3">Save Character</button>
         </div>
     );
 }

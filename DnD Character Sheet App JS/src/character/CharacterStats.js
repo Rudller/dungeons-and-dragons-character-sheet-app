@@ -21,6 +21,12 @@ export default class CharacterStats {
         this.initiative = Math.floor((this.dex-10)/2)
         this.speed = '9m'
 
+        this.hitDice = 8
+        this.maxHP = 0
+
+        this.charProficiencies = []
+        this.feats = ''
+
         this.abilities = [
             { name: 'Strength', abbreviation: 'STR', score: this.str, modifier: Math.floor((this.str-10)/2)},
             { name: 'Dexterity', abbreviation: 'DEX', score: this.dex, modifier: Math.floor((this.dex-10)/2)},
