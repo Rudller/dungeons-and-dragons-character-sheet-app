@@ -48,7 +48,6 @@ export default function Home() {
                 {!userSheets && <p className=" animate-pulse">There is no created character sheets. Click buttons below to create one</p>}
                 {userSheets && userSheets.map((e, i) => {
                     const char = JSON.parse(e.character[0])
-                    console.log(e)
 
                     return (
                         <div className="w-full h-20 cursor-pointer border border-gray-300 hover:border-orange-500" key={i}>
