@@ -9,16 +9,21 @@ import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import CharacterSheetCreator from './components/CharacterSheetCreator';
 import EmptyCharacterSheet from './components/EmptyCharacterSheet';
+import CharSheet from './components/CharSheet';
+import { useState } from 'react';
 
 export default function App() {
+  const [stats, setStats] = useState()
+
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<Home />}/>
+        <Route path='/' element={<Home callback={setStats} />}/>
         <Route path='/signin' element={<SignIn />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/character-sheet-creator' element={<CharacterSheetCreator />} />
         <Route path='/empty-chatacter-sheet' element={<EmptyCharacterSheet />}/>
+        <Route path='/char-sheet' element={<CharSheet stats={stats} />}/>
       </Routes>
     </Router>
   )

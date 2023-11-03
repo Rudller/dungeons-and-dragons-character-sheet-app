@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import supabase from "../config/supabaseClient";
 import { useNavigate } from 'react-router-dom'
 
-export default function Home() {
+export default function Home({ callback }) {
     const navigation = useNavigate()
 
     const [userID, setUserID] = useState(null)
@@ -49,8 +49,13 @@ export default function Home() {
                 {userSheets && userSheets.map((e, i) => {
                     const char = JSON.parse(e.character[0])
 
+                    const btnHandler = () => {
+                        callback(char)
+                        navigation('/char-sheet')
+                    }
+
                     return (
-                        <div className="w-full h-20 cursor-pointer border border-gray-300 hover:border-orange-500" key={i}>
+                        <div onClick={btnHandler} className="w-full h-20 cursor-pointer border border-gray-300 hover:border-orange-500" key={i}>
                             <h1 className="text-center">Character: {char.name}</h1>
                             <h2 className="text-center">Level: {char.lvl} / Class: {char.class} / Race: {char.race}</h2>
                         </div>
