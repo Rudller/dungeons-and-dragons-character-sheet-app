@@ -62,7 +62,7 @@ export default function Home({ callback }) {
                     )
                 })}
             </div>
-            <button className="border-slate-700 border-2 rounded-xl mb-2" onClick={() => navigation('/character-sheet-creator')}>Create your character based on OGL 1.1 Licence</button>
+            <button className="border-slate-700 bg-gray-500 border-2 rounded-xl mb-2" onClick={() => navigation('/character-sheet-creator')}>Create your character based on OGL 1.1 Licence (under construction)</button>
             <button onClick={() => navigation('/empty-chatacter-sheet')}>Create Character on Empty Sheet</button>
             <button 
                 className="bg-orange-500 border-slate-700 border-2 rounded-xl mb-2"

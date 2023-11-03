@@ -44,10 +44,30 @@ export default function CharSheet({ stats }) {
         )
     }
 
+    const STS = () => {
+        return (
+            <div className="w-1/2">
+                <div className="flex flex-col justify-center items-center border border-gray-300 rounded-md mb-5">
+                    {stats.savingThrows.map((e, i) => {
+                        return <p key={i}>{e.modifier} {e.ability}</p>
+                    })}
+                    <p className="font-bold">Saving Throws</p>
+                </div>
+                <div className="flex flex-col justify-center items-center border border-gray-300 rounded-md">
+                    {stats.skills.map((e, i) => {
+                        return <p key={i}>{e.modifier} {e.name}</p>
+                    })}
+                    <p className="font-bold">Skills</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
         <MainInfo />
         <Abilities />
+        <STS />
         </>
     )
 }
