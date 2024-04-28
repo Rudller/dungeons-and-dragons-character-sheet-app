@@ -42,8 +42,12 @@ export default function Home({ callback }) {
     }
 
     return (
+        <>
+        <header className="bg-slate-700">
+            <h1 className="flex text-4xl font-bold text-orange-500 text-center p-2 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">tRPG<p className="text-white font-thin font">Helper</p></h1>
+        </header>
         <div className="flex flex-col justify-center border-slate-700 border-2 rounded-xl p-1 shadow-2xl shadow-slate-700 w-11/12 sm:w-9/12 lg:w-1/2 xl:w-1/3 mx-auto my-5">
-            <h1 className="text-center font-bold text-4xl mb-2">Witoj poszukiwaczu przygód</h1>
+            <h1 className="text-center font-bold text-4xl mb-2">Welcome to Table RPG Helper!</h1>
             <div className="flex flex-col justify-center items-center border-gray-300 border my-5 rounded-md">
                 {!userSheets && <p className=" animate-pulse">There is no created character sheets. Click buttons below to create one</p>}
                 {userSheets && userSheets.map((e, i) => {
@@ -69,5 +73,7 @@ export default function Home({ callback }) {
                 onClick={onLogout}
             >Logout</button>
         </div>
+        </>
+        
     )
 }
